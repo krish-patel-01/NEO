@@ -3,7 +3,7 @@ from TOOLS.wolfram_alpha import WolframAlphaAPIWrapper_run
 
 def general_search(query: str) -> str:
     search = SearxSearchWrapper(
-        searx_host="http://127.0.0.1:8080", k=8,
+        searx_host="http://127.0.0.1:8080", k=20,
         engines=['google', 'duckduckgo','wikipedia'],
     )
     return search.run(query)
