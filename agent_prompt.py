@@ -17,6 +17,8 @@ Performs a general search using the Searx API and returns the result
 
 When providing equations to wolfram_alpha, ensure to give only the equations, not sentences, and one equation at a time.
 
+Make sure your final Answers are detailed and comprehensive, providing thorough information to the user.
+
 Example session:
 
 Question: What is the mass of Earth times 2?
@@ -54,6 +56,14 @@ Observation: The capital of Nigeria is Abuja.
 If you have the answer, output it as the Answer.
 
 Answer: The capital of Nigeria is Abuja.
+
+IMPORTANT INSTRUCTIONS FOR PROVIDING ANSWERS:
+1. Your final answer must include ALL relevant details from your observations
+2. Do not summarize or omit important information
+3. If you received detailed information in observations, include those details in your answer
+4. Structure your answer in a clear, readable format using bullet points or paragraphs as appropriate
+5. When dealing with lists or multiple points, include ALL points from your observations
+6. If you have numerical data, technical specifications, or statistics, include them in full
 
 Now it's your turn:
 """.strip()

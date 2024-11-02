@@ -58,9 +58,9 @@ class ChatApplication:
     def process_kevin_input(self, user_input: str):
         self.chat_history.append({"role": "user", "content": user_input})
         response = self.client.chat.completions.create(
-            model="llama3-8b-8192",
+            model="llama-3.1-8b-instant",
             messages=self.chat_history,
-            # max_tokens=100,
+            max_tokens=1500,
             temperature=1.2
         )
         assistant_message = response.choices[0].message.content
@@ -68,7 +68,7 @@ class ChatApplication:
         print(f"{Agent.KEVIN.value.capitalize()}:", assistant_message)
 
     def process_stuart_input(self, user_input: str):
-        stuart_result = agent_loop(query=user_input, verbose=False)
+        stuart_result = agent_loop(query=user_input, verbose=True, history=self.chat_history)
         print(f"{Agent.STUART.value.capitalize()}:", stuart_result)
         self.chat_history.append({"role": "user", "content": user_input})
         self.chat_history.append({"role": "assistant", "content": stuart_result})
