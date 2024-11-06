@@ -11,6 +11,14 @@ class ChatApplication:
     def run(self):
         while True:
             user_input = input(">>> ")
+            if user_input.lower() == "@bye":
+                break
+            if not user_input:
+                for _ in range(3):
+                    print("Please provide some input...")
+                    user_input = input(">>> ")
+                    if user_input:
+                        break
             self.process_input(user_input)
 
     def process_input(self, user_input: str):
