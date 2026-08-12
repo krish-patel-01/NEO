@@ -1,4 +1,29 @@
-venv/
-__pycache__/
+# Secrets — never commit. See .env.example for the shape.
 .env
-TOOLS/__pycache__/
+.env.local
+
+# Virtual environments
+venv/
+.venv/
+.venv-check/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Logs
+*.log
+agent.log
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

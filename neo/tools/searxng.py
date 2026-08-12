@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import requests
 import urllib3
@@ -40,11 +40,11 @@ class SearxSearchWrapper:
         self,
         searx_host: str = "",
         unsecure: bool = False,
-        params: Optional[dict] = None,
-        headers: Optional[dict] = None,
-        engines: Optional[List[str]] = None,
-        categories: Optional[List[str]] = None,
-        query_suffix: Optional[str] = "",
+        params: dict | None = None,
+        headers: dict | None = None,
+        engines: list[str] | None = None,
+        categories: list[str] | None = None,
+        query_suffix: str | None = "",
         k: int = 10,
     ):
         self.searx_host = searx_host
@@ -102,9 +102,9 @@ class SearxSearchWrapper:
     def run(
         self,
         query: str,
-        engines: Optional[List[str]] = None,
-        categories: Optional[List[str]] = None,
-        query_suffix: Optional[str] = "",
+        engines: list[str] | None = None,
+        categories: list[str] | None = None,
+        query_suffix: str | None = "",
         **kwargs: Any,
     ) -> str:
         """Run query through Searx API and parse results."""
@@ -134,11 +134,11 @@ class SearxSearchWrapper:
         self,
         query: str,
         num_results: int,
-        engines: Optional[List[str]] = None,
-        categories: Optional[List[str]] = None,
-        query_suffix: Optional[str] = "",
+        engines: list[str] | None = None,
+        categories: list[str] | None = None,
+        query_suffix: str | None = "",
         **kwargs: Any,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Run query through Searx API and return results with metadata."""
         _params = {"q": query}
         params = {**self.params, **_params, **kwargs}

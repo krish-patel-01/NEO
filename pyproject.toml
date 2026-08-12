@@ -1,0 +1,42 @@
+[project]
+name = "neo-agent"
+version = "0.1.0"
+description = "A ReAct agent with web search and Wolfram Alpha, running on Groq."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+keywords = ["agent", "react", "groq", "llm", "searxng", "wolfram-alpha"]
+
+# The previous requirements.txt was a `pip freeze` — it pinned fastapi, uvicorn,
+# starlette and pydantic, none of which this project imports. These five are the
+# actual direct dependencies.
+dependencies = [
+    "groq>=0.10.0",
+    "python-dotenv>=1.0.0",
+    "requests>=2.32.0",
+    "urllib3>=2.2.0",
+    "wolframalpha>=5.1.0",
+]
+
+[project.optional-dependencies]
+dev = ["ruff>=0.6"]
+
+[project.scripts]
+neo = "neo.chat:main"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+# Kept as a record of the original experiment; not linted or maintained.
+exclude = ["notebooks"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = ["E501"]
+
+[tool.setuptools.packages.find]
+include = ["neo*"]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
