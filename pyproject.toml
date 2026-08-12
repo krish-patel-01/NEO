@@ -20,9 +20,12 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["ruff>=0.6"]
+# Only needed for the HTTP API in neo/api.py; the CLI does not use them.
+api = ["fastapi>=0.115", "uvicorn>=0.30"]
 
 [project.scripts]
 neo = "neo.chat:main"
+neo-api = "neo.api:main"
 
 [tool.ruff]
 line-length = 100

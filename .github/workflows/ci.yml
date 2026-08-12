@@ -41,7 +41,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install
-        run: pip install -e .
+        run: pip install -e ".[api]"
 
       # Importing with no API keys set is the actual regression test here: the old
       # code ran `os.environ["GROQ_API_KEY"] = os.getenv("GROQ_API_KEY")` at module
@@ -52,8 +52,9 @@ jobs:
           WOLFRAM_ALPHA_APPID: ""
         run: |
           python -c "
-          import neo, neo.agent, neo.chat, neo.console, neo.prompts, neo.tools
+          import neo, neo.agent, neo.api, neo.chat, neo.console, neo.prompts, neo.tools
           assert sorted(neo.agent.TOOLS) == ['general_search', 'wolfram_alpha']
+          assert neo.api._chatbot is None, 'API must not build a Groq client at import'
           print('imports cleanly without credentials')
           "
 
