@@ -24,7 +24,7 @@ Example session:
 Question: What is the mass of Earth times 2?
 Thought: I need to find the mass of Earth
 Action: wolfram_alpha: Mass of Earth
-PAUSE 
+PAUSE
 
 You will be called again with this:
 
@@ -34,7 +34,7 @@ Thought: I need to multiply this by 2
 Action: wolfram_alpha: 5.972e24 * 2
 PAUSE
 
-You will be called again with this: 
+You will be called again with this:
 
 Observation: 1,1944×10e25
 

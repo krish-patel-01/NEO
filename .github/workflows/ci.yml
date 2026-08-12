@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Ruff
+        run: uvx ruff check --output-format=github .
+
+  import:
+    name: Install & import (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install
+        run: pip install -e .
+
+      # Importing with no API keys set is the actual regression test here: the old
+      # code ran `os.environ["GROQ_API_KEY"] = os.getenv("GROQ_API_KEY")` at module
+      # scope, which raised TypeError on import whenever the key was absent.
+      - name: Import without credentials
+        env:
+          GROQ_API_KEY: ""
+          WOLFRAM_ALPHA_APPID: ""
+        run: |
+          python -c "
+          import neo, neo.agent, neo.chat, neo.console, neo.prompts, neo.tools
+          assert sorted(neo.agent.TOOLS) == ['general_search', 'wolfram_alpha']
+          print('imports cleanly without credentials')
+          "
+
+  secrets:
+    name: No committed secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # This repo previously committed a .env containing live Groq, Reddit and
+      # Wolfram credentials. Fail the build rather than let that recur.
+      - name: Check for .env and key-shaped strings
+        run: |
+          if git ls-files --error-unmatch .env 2>/dev/null; then
+            echo "::error::.env is tracked by git — it must stay ignored"
+            exit 1
+          fi
+          if git grep -nIE '(gsk_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9]{20,})' -- . ':!.github/workflows/ci.yml'; then
+            echo "::error::an API-key-shaped string is committed"
+            exit 1
+          fi
+          echo "no committed secrets found"
