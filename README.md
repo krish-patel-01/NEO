@@ -75,7 +75,8 @@ API enabled. The `searxng/` directory holds a working `settings.yml` and `uwsgi.
 
 ```bash
 export SEARXNG_SECRET=$(openssl rand -hex 32)
-./start_searxng.sh
+./start_searxng.sh          # Linux/macOS
+windows_xng.bat             # Windows — frees port 8080, then starts the container
 ```
 
 Point elsewhere with `SEARXNG_HOST` if you already run one.
@@ -92,6 +93,32 @@ python -m neo.chat                     # equivalent
 
 python examples/run_query.py "28,800 seconds to hours"   # single query, no REPL
 ```
+
+### HTTP API
+
+An optional FastAPI wrapper exposes the same chat application over HTTP:
+
+```bash
+pip install -e ".[api]"
+neo-api                                # or: uvicorn neo.api:app --port 9000
+```
+
+| Route | Method | Purpose |
+|---|---|---|
+| `/chat` | POST | `{"content": "...", "think_mode": false}` — `think_mode` routes through the agent |
+| `/history` | GET | Full conversation history |
+| `/clear_chat` | DELETE | Reset the history |
+
+```bash
+curl -X POST localhost:9000/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"content": "mass of Earth times 2", "think_mode": true}'
+```
+
+> The API has **no authentication** and every caller shares one conversation
+> history. It binds to `127.0.0.1` for that reason. Override with `NEO_API_HOST`
+> only behind something that authenticates — anyone who can reach the port gets
+> your Groq quota and the whole transcript.
 
 ## Configuration
 
@@ -114,6 +141,7 @@ hardcoded one becomes a runtime 404 a few months later.
 neo/
 ├── agent.py          # ReAct loop, Agent class, tool dispatch table
 ├── chat.py           # interactive console, @think routing
+├── api.py            # optional FastAPI wrapper over chat.py
 ├── prompts.py        # ReAct system prompt
 ├── console.py        # coloured trace output
 └── tools/

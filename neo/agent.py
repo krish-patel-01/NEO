@@ -1,5 +1,6 @@
 """ReAct-style agent loop backed by Groq."""
 
+import logging
 import os
 import re
 import time
@@ -9,6 +10,11 @@ from groq import Groq
 from neo.console import print_text
 from neo.prompts import system_prompt
 from neo.tools import general_search, wolfram_alpha
+
+# A module logger, not logging.basicConfig(filename=...) at import. Configuring
+# the root logger from library code hijacks logging for anything that imports
+# NEO; the application decides where these records go.
+logger = logging.getLogger(__name__)
 
 # Model is configurable — Groq retires model IDs regularly, and a hardcoded one
 # turns into a 404 at runtime months later.
@@ -55,8 +61,10 @@ class Agent:
     def estimate_tokens(self, text: str) -> int:
         if not text:
             return 0
-        # Rough estimation: ~6 chars per token
-        return len(text) // 6
+        # ~4 chars per token is the usual English rule of thumb. The previous 6
+        # under-counted, so history was trimmed later than intended and requests
+        # could still cross the TPM limit.
+        return len(text) // 4
 
     def truncate_history(self):
         if len(self.messages) > 5:
@@ -74,6 +82,7 @@ class Agent:
             self.messages.append({"role": "user", "content": message})
         result = self.execute()
         self.messages.append({"role": "assistant", "content": result})
+        logger.debug("conversation state: %s", self.messages)
         return result
 
     def execute(self):
@@ -110,7 +119,7 @@ class Agent:
 
 def agent_loop(
     query: str = "",
-    max_iterations: int = 20,
+    max_iterations: int = 15,
     verbose: bool = True,
     history: list | None = None,
     client: Groq | None = None,
